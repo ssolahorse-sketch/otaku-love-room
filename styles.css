@@ -1317,9 +1317,9 @@ button {
 .controls-panel {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 9px;
+  gap: 12px;
   align-items: center;
-  padding: 10px 10px max(10px, env(safe-area-inset-bottom));
+  padding: 12px 14px max(14px, env(safe-area-inset-bottom));
   border-top: 1px solid var(--line);
   background: rgba(18, 15, 32, 0.9);
   backdrop-filter: blur(18px);
@@ -1365,8 +1365,8 @@ button {
 
 .chat-compose {
   display: grid;
-  grid-template-columns: 1fr 40px 64px;
-  gap: 7px;
+  grid-template-columns: 1fr 38px 62px;
+  gap: 8px;
 }
 
 .chat-compose input {
@@ -1399,12 +1399,8 @@ button {
 .game-keyboard {
   grid-column: 1 / -1;
   display: grid;
-  gap: 7px;
-  padding: 8px 4px 2px;
-  border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025)),
-    rgba(12, 12, 20, 0.34);
+  gap: 5px;
+  padding-top: 2px;
 }
 
 .game-keyboard.hidden {
@@ -1413,59 +1409,38 @@ button {
 
 .keyboard-row {
   display: grid;
-  gap: 6px;
-  align-items: center;
+  gap: 5px;
 }
 
 .keyboard-row:nth-child(1) {
-  grid-template-columns: repeat(10, minmax(0, 1fr));
+  grid-template-columns: repeat(8, 1fr);
 }
 
 .keyboard-row:nth-child(2) {
-  grid-template-columns: 0.5fr repeat(9, minmax(0, 1fr)) 0.5fr;
+  grid-template-columns: repeat(9, 1fr);
 }
 
 .keyboard-row:nth-child(3) {
-  grid-template-columns: 0.9fr repeat(7, minmax(0, 1fr)) 1.25fr;
+  grid-template-columns: repeat(7, 1fr);
 }
 
 .keyboard-row:nth-child(4) {
-  grid-template-columns: 1.05fr 1.05fr 4fr 1.45fr 1.25fr;
-}
-
-.keyboard-row:nth-child(2)::before,
-.keyboard-row:nth-child(2)::after,
-.keyboard-row:nth-child(3)::before {
-  content: "";
+  grid-template-columns: 1fr 1fr 2fr 1fr 1fr;
 }
 
 .game-key {
   min-width: 0;
-  min-height: 38px;
+  min-height: 31px;
   border-radius: 8px;
-  background: rgba(244, 246, 255, 0.9);
-  color: #151524;
-  font-size: 17px;
-  font-weight: 760;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.22);
-  touch-action: manipulation;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 248, 241, 0.92);
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .game-key.action {
-  background: rgba(151, 157, 178, 0.92);
-  color: #10111c;
-  font-size: 13px;
-}
-
-.game-key[data-key-action="space"] {
-  font-size: 12px;
-  color: rgba(21, 21, 36, 0.58);
-}
-
-.game-key[data-key-action="send"] {
-  background: var(--accent-2);
-  color: #071b24;
-  font-weight: 850;
+  background: rgba(88, 215, 255, 0.18);
+  color: #dff8ff;
 }
 
 button:active {
