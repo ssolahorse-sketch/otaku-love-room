@@ -373,9 +373,11 @@
         </div>
 
         <form class="chat-compose" id="chatForm">
-          <input id="chatInput" type="text" autocomplete="off" maxlength="40" placeholder="말을 입력해줘">
+          <input id="chatInput" type="text" autocomplete="off" maxlength="40" placeholder="말을 입력해줘" readonly>
+          <button class="keyboard-toggle" id="keyboardToggle" type="button" aria-label="게임 자판 열기">키</button>
           <button type="submit">전송</button>
         </form>
+        <div class="game-keyboard hidden" id="gameKeyboard" aria-label="게임 전용 한글 자판"></div>
       </section>
     </section>
   </main>

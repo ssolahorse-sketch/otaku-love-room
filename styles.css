@@ -1301,7 +1301,7 @@ button {
 
 .chat-compose {
   display: grid;
-  grid-template-columns: 1fr 62px;
+  grid-template-columns: 1fr 38px 62px;
   gap: 8px;
 }
 
@@ -1325,6 +1325,58 @@ button {
   background: var(--accent-2);
   color: #071b24;
   font-weight: 850;
+}
+
+.chat-compose .keyboard-toggle {
+  background: rgba(255, 255, 255, 0.11);
+  color: var(--ink);
+}
+
+.game-keyboard {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 5px;
+  padding-top: 2px;
+}
+
+.game-keyboard.hidden {
+  display: none;
+}
+
+.keyboard-row {
+  display: grid;
+  gap: 5px;
+}
+
+.keyboard-row:nth-child(1) {
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.keyboard-row:nth-child(2) {
+  grid-template-columns: repeat(9, 1fr);
+}
+
+.keyboard-row:nth-child(3) {
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.keyboard-row:nth-child(4) {
+  grid-template-columns: 1fr 1fr 2fr 1fr 1fr;
+}
+
+.game-key {
+  min-width: 0;
+  min-height: 31px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 248, 241, 0.92);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.game-key.action {
+  background: rgba(88, 215, 255, 0.18);
+  color: #dff8ff;
 }
 
 button:active {

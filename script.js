@@ -232,6 +232,8 @@ const playerBackPortrait = document.querySelector("#playerBackPortrait");
 const heartScore = document.querySelector("#heartScore");
 const chatForm = document.querySelector("#chatForm");
 const chatInput = document.querySelector("#chatInput");
+const keyboardToggle = document.querySelector("#keyboardToggle");
+const gameKeyboard = document.querySelector("#gameKeyboard");
 const floorBadge = document.querySelector("#floorBadge");
 const floorName = document.querySelector("#floorName");
 const floorFeature = document.querySelector("#floorFeature");
@@ -1252,6 +1254,187 @@ function maybeSurpriseThreat(chance = 0.04) {
   threatTimer = window.setTimeout(missThreat, 3600);
 }
 
+const keyboardRows = [
+  ["ㅂ", "ㅈ", "ㄷ", "ㄱ", "ㅅ", "ㅛ", "ㅕ", "ㅑ"],
+  ["ㅁ", "ㄴ", "ㅇ", "ㄹ", "ㅎ", "ㅗ", "ㅓ", "ㅏ", "ㅣ"],
+  ["ㅋ", "ㅌ", "ㅊ", "ㅍ", "ㅠ", "ㅜ", "ㅡ"],
+  [
+    { label: "ㅋㅋ", value: "ㅋㅋ" },
+    { label: "ㅎㅎ", value: "ㅎㅎ" },
+    { label: "스페이스", action: "space" },
+    { label: "⌫", action: "delete" },
+    { label: "닫기", action: "close" },
+  ],
+];
+
+const choList = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"];
+const jungList = ["ㅏ", "ㅐ", "ㅑ", "ㅒ", "ㅓ", "ㅔ", "ㅕ", "ㅖ", "ㅗ", "ㅘ", "ㅙ", "ㅚ", "ㅛ", "ㅜ", "ㅝ", "ㅞ", "ㅟ", "ㅠ", "ㅡ", "ㅢ", "ㅣ"];
+const jongList = ["", "ㄱ", "ㄲ", "ㄳ", "ㄴ", "ㄵ", "ㄶ", "ㄷ", "ㄹ", "ㄺ", "ㄻ", "ㄼ", "ㄽ", "ㄾ", "ㄿ", "ㅀ", "ㅁ", "ㅂ", "ㅄ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"];
+const choIndex = Object.fromEntries(choList.map((letter, index) => [letter, index]));
+const jungIndex = Object.fromEntries(jungList.map((letter, index) => [letter, index]));
+const jongIndex = Object.fromEntries(jongList.map((letter, index) => [letter, index]));
+const vowelCombos = {
+  "ㅗㅏ": "ㅘ",
+  "ㅗㅐ": "ㅙ",
+  "ㅗㅣ": "ㅚ",
+  "ㅜㅓ": "ㅝ",
+  "ㅜㅔ": "ㅞ",
+  "ㅜㅣ": "ㅟ",
+  "ㅡㅣ": "ㅢ",
+};
+let composingHangul = { active: false, cho: "", jung: "", jong: "" };
+
+function buildSyllable(cho, jung, jong = "") {
+  return String.fromCharCode(0xac00 + choIndex[cho] * 588 + jungIndex[jung] * 28 + (jongIndex[jong] || 0));
+}
+
+function resetComposition() {
+  composingHangul = { active: false, cho: "", jung: "", jong: "" };
+}
+
+function setChatValue(value) {
+  chatInput.value = value.slice(0, Number(chatInput.maxLength) || 40);
+}
+
+function appendChatText(text) {
+  setChatValue(chatInput.value + text);
+}
+
+function replaceLastChatText(text) {
+  setChatValue(chatInput.value.slice(0, -1) + text);
+}
+
+function insertConsonant(letter) {
+  if (!composingHangul.active) {
+    appendChatText(letter);
+    composingHangul = { active: true, cho: letter, jung: "", jong: "" };
+    return;
+  }
+
+  if (composingHangul.cho && !composingHangul.jung) {
+    appendChatText(letter);
+    composingHangul = { active: true, cho: letter, jung: "", jong: "" };
+    return;
+  }
+
+  if (composingHangul.cho && composingHangul.jung && !composingHangul.jong && jongIndex[letter]) {
+    composingHangul.jong = letter;
+    replaceLastChatText(buildSyllable(composingHangul.cho, composingHangul.jung, composingHangul.jong));
+    return;
+  }
+
+  appendChatText(letter);
+  composingHangul = { active: true, cho: letter, jung: "", jong: "" };
+}
+
+function insertVowel(letter) {
+  if (composingHangul.active && composingHangul.cho && !composingHangul.jung) {
+    composingHangul.jung = letter;
+    replaceLastChatText(buildSyllable(composingHangul.cho, composingHangul.jung));
+    return;
+  }
+
+  if (composingHangul.active && composingHangul.cho && composingHangul.jung && composingHangul.jong) {
+    const nextCho = choIndex[composingHangul.jong] !== undefined ? composingHangul.jong : "";
+    replaceLastChatText(buildSyllable(composingHangul.cho, composingHangul.jung));
+    if (nextCho) {
+      appendChatText(buildSyllable(nextCho, letter));
+      composingHangul = { active: true, cho: nextCho, jung: letter, jong: "" };
+      return;
+    }
+  }
+
+  if (composingHangul.active && composingHangul.cho && composingHangul.jung && !composingHangul.jong) {
+    const combo = vowelCombos[`${composingHangul.jung}${letter}`];
+    if (combo) {
+      composingHangul.jung = combo;
+      replaceLastChatText(buildSyllable(composingHangul.cho, composingHangul.jung));
+      return;
+    }
+  }
+
+  appendChatText(letter);
+  resetComposition();
+}
+
+function deleteKeyboardText() {
+  if (!chatInput.value) return;
+
+  if (composingHangul.active && composingHangul.jong) {
+    composingHangul.jong = "";
+    replaceLastChatText(buildSyllable(composingHangul.cho, composingHangul.jung));
+    return;
+  }
+
+  if (composingHangul.active && composingHangul.jung) {
+    composingHangul.jung = "";
+    replaceLastChatText(composingHangul.cho);
+    return;
+  }
+
+  setChatValue(chatInput.value.slice(0, -1));
+  resetComposition();
+}
+
+function handleKeyboardValue(value) {
+  if (choIndex[value] !== undefined) {
+    insertConsonant(value);
+    return;
+  }
+  if (jungIndex[value] !== undefined) {
+    insertVowel(value);
+    return;
+  }
+  resetComposition();
+  appendChatText(value);
+}
+
+function renderGameKeyboard() {
+  gameKeyboard.textContent = "";
+  keyboardRows.forEach((row) => {
+    const rowElement = document.createElement("div");
+    rowElement.className = "keyboard-row";
+    row.forEach((key) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `game-key ${key.action ? "action" : ""}`;
+      button.textContent = key.label || key;
+      button.dataset.keyValue = key.value || key;
+      if (key.action) button.dataset.keyAction = key.action;
+      rowElement.append(button);
+    });
+    gameKeyboard.append(rowElement);
+  });
+}
+
+function toggleGameKeyboard(forceOpen) {
+  const shouldOpen = forceOpen ?? gameKeyboard.classList.contains("hidden");
+  gameKeyboard.classList.toggle("hidden", !shouldOpen);
+  keyboardToggle.textContent = shouldOpen ? "닫" : "키";
+}
+
+function handleGameKeyboardClick(event) {
+  const button = event.target.closest(".game-key");
+  if (!button) return;
+  event.preventDefault();
+  const action = button.dataset.keyAction;
+  if (action === "delete") {
+    deleteKeyboardText();
+    return;
+  }
+  if (action === "space") {
+    resetComposition();
+    appendChatText(" ");
+    return;
+  }
+  if (action === "close") {
+    resetComposition();
+    toggleGameKeyboard(false);
+    return;
+  }
+  handleKeyboardValue(button.dataset.keyValue || "");
+}
+
 function sendMessage(event) {
   event.preventDefault();
   const text = chatInput.value.trim();
@@ -1259,6 +1442,7 @@ function sendMessage(event) {
 
   speakPlayer(text);
   chatInput.value = "";
+  resetComposition();
   state.score += 1;
   heartScore.textContent = state.score;
   grantRoomReward("대화 보상", 1, 2, 0.04);
@@ -1463,6 +1647,9 @@ document.querySelectorAll(".move-btn").forEach((button) => {
 });
 
 chatForm.addEventListener("submit", sendMessage);
+keyboardToggle.addEventListener("click", () => toggleGameKeyboard());
+chatInput.addEventListener("click", () => toggleGameKeyboard(true));
+gameKeyboard.addEventListener("click", handleGameKeyboardClick);
 gameRoom.addEventListener("pointerdown", handleRoomTap);
 roomThreat.addEventListener("pointerdown", chaseThreat);
 miniGameButton.addEventListener("click", openMiniGame);
@@ -1504,6 +1691,7 @@ if ("ResizeObserver" in window) {
   new ResizeObserver(scheduleRoomMetricsUpdate).observe(gameRoom);
 }
 updateAppViewport();
+renderGameKeyboard();
 updateRoomProgress();
 updateCityStats();
 updatePartnerGender();
