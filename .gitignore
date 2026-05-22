@@ -1,0 +1,4 @@
+*.log
+server-start.*.log
+server.*.log
+localtunnel.*.log

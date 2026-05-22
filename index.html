@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#171326">
+  <title>오타쿠의 연애</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="phone-shell" aria-label="오타쿠의 연애">
+    <section class="screen splash active" id="splashScreen" aria-label="시작 화면">
+      <div class="stars" aria-hidden="true"></div>
+      <img class="app-icon" src="assets/icon.png" alt="오타쿠의 연애 아이콘">
+      <p class="tap-text">tap to start</p>
+    </section>
+
+    <section class="screen setup-screen" id="setupScreen" aria-label="매칭 설정">
+      <header class="app-top">
+        <img class="mini-avatar" src="assets/icon.png" alt="">
+        <div>
+          <p>matching profile</p>
+          <h1>먼저 조건을 정해줘</h1>
+        </div>
+      </header>
+
+      <div class="setup-scroll">
+        <section class="setup-block" aria-labelledby="relationTitle">
+          <h2 id="relationTitle">만남 타입</h2>
+          <div class="segmented" id="relationOptions">
+            <button class="segment active" type="button" data-relation="oppositeFriend">이성 친구</button>
+            <button class="segment" type="button" data-relation="sameFriend">동성 친구</button>
+            <button class="segment" type="button" data-relation="oppositeLover">이성 애인</button>
+            <button class="segment" type="button" data-relation="sameLover">동성 애인</button>
+          </div>
+        </section>
+
+        <section class="setup-block" aria-labelledby="myGenderTitle">
+          <h2 id="myGenderTitle">내 성별</h2>
+          <div class="segmented two" id="myGenderOptions">
+            <button class="segment active" type="button" data-gender="female">여자</button>
+            <button class="segment" type="button" data-gender="male">남자</button>
+          </div>
+        </section>
+      </div>
+
+      <button class="primary-btn" id="nextAppearanceButton" type="button">상대 외형 고르기</button>
+    </section>
+
+    <section class="screen appearance-screen" id="appearanceScreen" aria-label="상대 외형 선택">
+      <header class="app-top">
+        <button class="icon-btn" id="backToSetupFromAppearance" type="button" aria-label="조건으로 돌아가기">‹</button>
+        <div>
+          <p id="appearanceHint">상대 성별: 남자</p>
+          <h1>상대 외형을 골라줘</h1>
+        </div>
+      </header>
+
+      <div class="appearance-stage" id="characterOptions"></div>
+
+      <button class="primary-btn" id="matchButton" type="button">매칭 시작</button>
+    </section>
+
+    <section class="screen matching-screen" id="matchingScreen" aria-label="매칭 중">
+      <div class="match-orbit" aria-hidden="true">
+        <img id="matchingPortrait" src="assets/boy1.png" alt="">
+      </div>
+      <h2>방을 생성하는 중</h2>
+      <p id="matchingText">상대가 접속하고 있어...</p>
+    </section>
+
+    <section class="screen room-screen" id="roomScreen" aria-label="게임 방">
+      <header class="room-header">
+        <button class="icon-btn" id="backToAppearance" type="button" aria-label="외형 선택으로 돌아가기">‹</button>
+        <div>
+          <p id="roomRelation">이성 친구 · 상대 남자</p>
+          <h2 id="roomName">하루의 방</h2>
+        </div>
+        <button class="mini-game-btn" id="miniGameButton" type="button" aria-label="미니게임 열기">게임</button>
+        <button class="city-btn" id="cityButton" type="button" aria-label="도시 메뉴 열기">도시</button>
+        <div class="affinity" aria-label="친밀도">
+          <span>♡</span>
+          <strong id="heartScore">3</strong>
+        </div>
+      </header>
+
+      <section class="game-room" aria-label="캐릭터 방">
+        <section class="room-progress" aria-label="방 성장">
+          <div class="floor-chip">
+            <strong id="floorBadge">B1</strong>
+            <span id="floorName">지하방</span>
+          </div>
+          <div class="room-xp">
+            <div>
+              <span id="floorFeature">노동형 방어 · 꿈틀이 자주 등장</span>
+              <strong id="roomCoins">0 코인</strong>
+            </div>
+            <div class="room-xp-track">
+              <span id="roomXpBar"></span>
+            </div>
+            <p id="roomXpText">방 경험치 0 / 24</p>
+            <div class="clean-track">
+              <span id="roomCleanBar"></span>
+            </div>
+            <p id="roomCleanText">청결도 100</p>
+          </div>
+        </section>
+
+        <div class="room-size-guide" aria-hidden="true">
+          <span class="room-edge back"></span>
+          <span class="room-edge left"></span>
+          <span class="room-edge right"></span>
+          <span class="room-edge left-floor"></span>
+          <span class="room-edge right-floor"></span>
+        </div>
+        <div class="window-view" aria-hidden="true"></div>
+        <div class="room-floor" aria-hidden="true"></div>
+
+        <div class="partner-bubble hidden" id="partnerBubble"></div>
+        <div class="player-bubble hidden" id="playerBubble"></div>
+
+        <div class="partner-character" id="partnerCharacter" aria-label="상대 캐릭터">
+          <img id="partnerPortrait" src="assets/boy1.png" alt="">
+        </div>
+
+        <div class="player-shadow" id="playerCharacter" aria-label="내 캐릭터 그림자">
+          <img class="player-front" id="playerFrontPortrait" src="assets/girl1.png" alt="">
+          <img id="playerBackPortrait" src="assets/girl1-back.png" alt="">
+        </div>
+
+        <button class="room-threat hidden" id="roomThreat" type="button" aria-label="방해물 잡기">
+          <span>꿈틀이</span>
+        </button>
+        <div class="reward-toast hidden" id="rewardToast"></div>
+
+        <section class="mini-game-panel hidden" id="miniGamePanel" aria-label="하트폭탄 미니게임">
+          <div class="mini-game-top">
+            <div>
+              <p>언제 터질지 몰라</p>
+              <h3>두근두근 폭탄</h3>
+            </div>
+            <button class="mini-close" id="miniGameClose" type="button" aria-label="미니게임 닫기">×</button>
+          </div>
+          <div class="bomb-arena" id="bombArena">
+            <div class="bomb-side" id="playerBombSide">나</div>
+            <div class="bomb-token" id="bombToken">♥</div>
+            <div class="bomb-side" id="partnerBombSide">상대</div>
+          </div>
+          <div class="mini-status">
+            <strong id="bombTimer">10.0</strong>
+            <span id="bombStatus">버튼을 눌러 시작</span>
+          </div>
+          <div class="mini-actions">
+            <button id="bombPassButton" type="button">넘기기</button>
+            <button id="bombTrickButton" type="button">시간 멈춤</button>
+          </div>
+          <button class="mini-retry" id="bombStartButton" type="button">시작</button>
+        </section>
+
+        <section class="city-panel hidden" id="cityPanel" aria-label="도시 메뉴">
+          <div class="city-top">
+            <div>
+              <p>방 밖에서 돈 벌고, 구경하고, 거래하기</p>
+              <h3>도시</h3>
+            </div>
+            <button class="mini-close" id="cityClose" type="button" aria-label="도시 메뉴 닫기">×</button>
+          </div>
+
+          <div class="city-tabs" role="tablist" aria-label="도시 탭">
+            <button class="active" type="button" data-city-tab="jobs">알바방</button>
+            <button type="button" data-city-tab="visits">집들이</button>
+            <button type="button" data-city-tab="market">매매방</button>
+          </div>
+
+          <div class="city-view active" id="jobsView">
+            <div class="board-head">
+              <div>
+                <strong>알바방 게시판</strong>
+                <span>꿈틀이를 잡고 보상을 나눠 받는 글</span>
+              </div>
+              <button class="write-btn" type="button" data-write-board="jobs">글쓰기</button>
+            </div>
+            <div class="city-stats" aria-label="신뢰도와 알바 기록">
+              <div>
+                <span>알바 신뢰도</span>
+                <strong id="workerTrust">72</strong>
+              </div>
+              <div>
+                <span>집주인 신뢰도</span>
+                <strong id="ownerTrust">80</strong>
+              </div>
+              <div>
+                <span>잡은 꿈틀이</span>
+                <strong id="jobCatchCount">0</strong>
+              </div>
+            </div>
+            <div class="board-list" id="jobsBoard">
+            <article class="city-card board-post">
+              <div>
+                <strong>유현의 B1 꿈틀이 알바</strong>
+                <p>초보도 가능. 잡은 코인은 집주인과 나눠요.</p>
+              </div>
+              <div class="post-meta">
+                <span>집주인 유현</span>
+                <span>신뢰도 68+</span>
+                <span>방금 전</span>
+              </div>
+              <div class="split-row" aria-label="보상 분배">
+                <button class="active" type="button" data-split="70">7:3</button>
+                <button type="button" data-split="60">6:4</button>
+                <button type="button" data-split="80">8:2</button>
+              </div>
+              <button class="city-action" id="startJobButton" type="button">알바 시작</button>
+            </article>
+            <article class="city-card compact board-post">
+              <strong>세라의 창문 꿈틀이 알바</strong>
+              <p>요구 신뢰도 75 · 반짝 꿈틀이 확률 높음 · 신청 대기</p>
+              <div class="post-meta">
+                <span>집주인 세라</span>
+                <span>8:2 제안</span>
+                <span>3분 전</span>
+              </div>
+            </article>
+            <article class="city-card compact board-post">
+              <strong>하린의 지하방 긴급 알바</strong>
+              <p>창문 쪽 꿈틀이 많음 · 6:4 가능 · 바로 입장</p>
+              <div class="post-meta">
+                <span>집주인 하린</span>
+                <span>긴급</span>
+                <span>7분 전</span>
+              </div>
+            </article>
+            </div>
+            <article class="city-card compact">
+              <strong>현재 조건</strong>
+              <p id="jobSplitText">내 몫 70%, 집주인 몫 30%</p>
+            </article>
+          </div>
+
+          <div class="city-view" id="visitsView">
+            <div class="board-head">
+              <div>
+                <strong>집들이 게시판</strong>
+                <span>다른 사람 방을 구경하거나 같이 놀러가기</span>
+              </div>
+              <button class="write-btn" type="button" data-write-board="visits">글쓰기</button>
+            </div>
+            <div class="city-stats visit-stats" aria-label="집들이 신뢰도와 팔로워">
+              <div>
+                <span>손님 신뢰도</span>
+                <strong id="guestTrust">74</strong>
+              </div>
+              <div>
+                <span>집주인 신뢰도</span>
+                <strong id="hostTrust">82</strong>
+              </div>
+              <div>
+                <span>방 팔로워</span>
+                <strong id="roomFollowers">18</strong>
+              </div>
+            </div>
+            <article class="city-card host-board">
+              <div>
+                <strong>내 집들이 대기자</strong>
+                <p>신청한 사람만 대기자에 쌓이고, 집주인이 보고 승인해요.</p>
+              </div>
+              <div class="waiting-list" id="waitingList">
+                <div class="waiting-item">
+                  <div>
+                    <strong>라온</strong>
+                    <span>손님 신뢰도 81 · 작은 선물 공개 · 수다 희망</span>
+                  </div>
+                  <button type="button" data-approve-guest>승인</button>
+                </div>
+                <div class="waiting-item">
+                  <div>
+                    <strong>민서</strong>
+                    <span>손님 신뢰도 76 · 비밀 선물 · 보드게임 희망</span>
+                  </div>
+                  <button type="button" data-approve-guest>승인</button>
+                </div>
+              </div>
+            </article>
+            <div class="board-list" id="visitsBoard">
+            <article class="city-card board-post">
+              <div>
+                <strong>세라의 원룸</strong>
+                <p>창문 커스텀 구경 가능 · 미니게임 초대 가능</p>
+              </div>
+              <div class="post-meta">
+                <span>방문 2명</span>
+                <span>승인제</span>
+                <span>팔로워 43</span>
+                <span>집주인 신뢰도 88</span>
+              </div>
+              <div class="prep-row">
+                <span>집주인 다과: 정성 쿠키 공개</span>
+                <span>내 선물: 작은 꽃 공개</span>
+              </div>
+              <button class="follow-btn" type="button" data-follow-room>팔로우</button>
+              <button class="city-action" type="button" data-city-note="집들이 신청을 보냈어">조인 신청</button>
+            </article>
+            <article class="city-card board-post">
+              <div>
+                <strong>유현의 지하방</strong>
+                <p>꿈틀이 알바 모집 중 · 신뢰도 68 이상</p>
+              </div>
+              <div class="post-meta">
+                <span>방문 1명</span>
+                <span>알바 가능</span>
+                <span>팔로워 18</span>
+                <span>집주인 신뢰도 82</span>
+              </div>
+              <div class="prep-row">
+                <span>집주인 다과: 기본 차</span>
+                <span>내 선물: 비밀 선물</span>
+              </div>
+              <button class="follow-btn" type="button" data-follow-room>팔로우</button>
+              <button class="city-action" type="button" data-city-note="알바 겸 방문 신청을 보냈어">신청</button>
+            </article>
+            </div>
+          </div>
+
+          <div class="city-view" id="marketView">
+            <div class="board-head">
+              <div>
+                <strong>매매방 게시판</strong>
+                <span>방 가치와 기록을 보고 거래 후보 구경하기</span>
+              </div>
+              <button class="write-btn" type="button" data-write-board="market">글쓰기</button>
+            </div>
+            <div class="board-list" id="marketBoard">
+            <article class="city-card board-post">
+              <div>
+                <strong>1F 원룸 매물</strong>
+                <p>가치 1,240코인 · 창문 있음 · 청결도 기록 양호</p>
+              </div>
+              <div class="post-meta">
+                <span>판매 희망</span>
+                <span>1,240코인</span>
+                <span>11분 전</span>
+              </div>
+              <button class="city-action" type="button" data-city-note="매매방은 아직 구경 모드야">구경</button>
+            </article>
+            <article class="city-card board-post">
+              <div>
+                <strong>B1 지하방 급매</strong>
+                <p>가치 420코인 · 기본 가구 있음 · 초보용</p>
+              </div>
+              <div class="post-meta">
+                <span>급매</span>
+                <span>420코인</span>
+                <span>18분 전</span>
+              </div>
+              <button class="city-action" type="button" data-city-note="매물 상세는 나중에 열릴 예정이야">상세</button>
+            </article>
+            </div>
+            <article class="city-card compact">
+              <strong>거래 원칙</strong>
+              <p>방은 팔 수 있지만, 관계와 대화 기록은 따라가지 않아요.</p>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <section class="controls-panel" aria-label="조작과 채팅">
+        <div class="move-pad" aria-label="이동 버튼">
+          <button class="move-btn up" type="button" data-move="up" aria-label="위로 이동">▲</button>
+          <button class="move-btn left" type="button" data-move="left" aria-label="왼쪽 이동">◀</button>
+          <button class="move-btn down" type="button" data-move="down" aria-label="아래로 이동">▼</button>
+          <button class="move-btn right" type="button" data-move="right" aria-label="오른쪽 이동">▶</button>
+        </div>
+
+        <form class="chat-compose" id="chatForm">
+          <input id="chatInput" type="text" autocomplete="off" maxlength="40" placeholder="말을 입력해줘">
+          <button type="submit">전송</button>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
