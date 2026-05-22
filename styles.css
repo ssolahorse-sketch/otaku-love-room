@@ -1252,7 +1252,7 @@ button {
 
 .controls-panel {
   display: grid;
-  grid-template-columns: 118px 1fr;
+  grid-template-columns: 1fr;
   gap: 12px;
   align-items: center;
   padding: 12px 14px max(14px, env(safe-area-inset-bottom));
