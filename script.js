@@ -1276,14 +1276,14 @@ function maybeSurpriseThreat(chance = 0.04) {
 }
 
 const keyboardRows = [
-  ["ㅂ", "ㅈ", "ㄷ", "ㄱ", "ㅅ", "ㅛ", "ㅕ", "ㅑ"],
+  ["ㅂ", "ㅈ", "ㄷ", "ㄱ", "ㅅ", "ㅛ", "ㅕ", "ㅑ", "ㅐ", "ㅔ"],
   ["ㅁ", "ㄴ", "ㅇ", "ㄹ", "ㅎ", "ㅗ", "ㅓ", "ㅏ", "ㅣ"],
-  ["ㅋ", "ㅌ", "ㅊ", "ㅍ", "ㅠ", "ㅜ", "ㅡ"],
+  ["ㅋ", "ㅌ", "ㅊ", "ㅍ", "ㅠ", "ㅜ", "ㅡ", { label: "⌫", action: "delete" }],
   [
     { label: "ㅋㅋ", value: "ㅋㅋ" },
     { label: "ㅎㅎ", value: "ㅎㅎ" },
-    { label: "스페이스", action: "space" },
-    { label: "⌫", action: "delete" },
+    { label: "space", action: "space" },
+    { label: "전송", action: "send" },
     { label: "닫기", action: "close" },
   ],
 ];
@@ -1451,6 +1451,10 @@ function handleGameKeyboardClick(event) {
   if (action === "close") {
     resetComposition();
     toggleGameKeyboard(false);
+    return;
+  }
+  if (action === "send") {
+    chatForm.requestSubmit();
     return;
   }
   handleKeyboardValue(button.dataset.keyValue || "");
