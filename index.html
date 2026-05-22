@@ -9,6 +9,16 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <section class="client-lock" id="clientLock" aria-label="Private password">
+    <form class="client-lock-card" id="clientLockForm">
+      <h1>Private Room</h1>
+      <p>Enter the temporary password to open the app.</p>
+      <p class="client-lock-error hidden" id="clientLockError">Wrong password.</p>
+      <input id="clientLockInput" type="password" autocomplete="current-password" placeholder="Password">
+      <button type="submit">Enter</button>
+    </form>
+  </section>
+
   <main class="phone-shell" aria-label="오타쿠의 연애">
     <section class="screen splash active" id="splashScreen" aria-label="시작 화면">
       <div class="stars" aria-hidden="true"></div>

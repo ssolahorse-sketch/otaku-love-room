@@ -59,6 +59,70 @@ button {
   box-shadow: var(--shadow);
 }
 
+.client-lock {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255, 111, 157, 0.24), transparent 28%),
+    radial-gradient(circle at 82% 14%, rgba(88, 215, 255, 0.2), transparent 26%),
+    linear-gradient(145deg, #111522, #26182f 54%, #102a36);
+}
+
+.client-lock.unlocked {
+  display: none;
+}
+
+.client-lock-card {
+  width: min(88vw, 360px);
+  padding: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(30, 26, 45, 0.88);
+  box-shadow: var(--shadow);
+}
+
+.client-lock-card h1 {
+  margin: 0 0 8px;
+  font-size: 24px;
+}
+
+.client-lock-card p {
+  margin: 0 0 18px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.client-lock-card input,
+.client-lock-card button {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 8px;
+}
+
+.client-lock-card input {
+  padding: 0 13px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  outline: 0;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.client-lock-card button {
+  margin-top: 10px;
+  background: var(--accent-2);
+  color: #071b24;
+  font-weight: 850;
+}
+
+.client-lock-error {
+  color: #ff9fbd !important;
+  font-size: 14px;
+}
+
 .screen {
   position: absolute;
   inset: 0;

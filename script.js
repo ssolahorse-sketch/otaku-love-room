@@ -5,6 +5,11 @@ const screens = {
   matching: document.querySelector("#matchingScreen"),
   room: document.querySelector("#roomScreen"),
 };
+const clientPassword = "otaku2026";
+const clientLock = document.querySelector("#clientLock");
+const clientLockForm = document.querySelector("#clientLockForm");
+const clientLockInput = document.querySelector("#clientLockInput");
+const clientLockError = document.querySelector("#clientLockError");
 
 const relationLabels = {
   oppositeFriend: "이성 친구",
@@ -314,6 +319,22 @@ const bombGame = {
 function showScreen(name) {
   Object.values(screens).forEach((screen) => screen.classList.remove("active"));
   screens[name].classList.add("active");
+}
+
+function unlockClientApp() {
+  clientLock.classList.add("unlocked");
+  sessionStorage.setItem("otakuClientUnlocked", "1");
+}
+
+function handleClientLock(event) {
+  event.preventDefault();
+  if (clientLockInput.value === clientPassword) {
+    unlockClientApp();
+    return;
+  }
+  clientLockError.classList.remove("hidden");
+  clientLockInput.value = "";
+  clientLockInput.focus();
 }
 
 function getPartnerGender() {
@@ -1633,6 +1654,12 @@ relationOptions.forEach((button) => {
 myGenderOptions.forEach((button) => {
   button.addEventListener("click", () => selectMyGender(button));
 });
+
+if (sessionStorage.getItem("otakuClientUnlocked") === "1") {
+  unlockClientApp();
+}
+
+clientLockForm.addEventListener("submit", handleClientLock);
 
 document.querySelectorAll(".move-btn").forEach((button) => {
   button.addEventListener("pointerdown", (event) => {
