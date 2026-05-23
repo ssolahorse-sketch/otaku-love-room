@@ -224,8 +224,6 @@ const matchButton = document.querySelector("#matchButton");
 const matchingText = document.querySelector("#matchingText");
 const matchingPortrait = document.querySelector("#matchingPortrait");
 const appearanceHint = document.querySelector("#appearanceHint");
-const roomRelation = document.querySelector("#roomRelation");
-const roomName = document.querySelector("#roomName");
 const gameRoom = document.querySelector(".game-room");
 const partnerCharacter = document.querySelector("#partnerCharacter");
 const partnerPortrait = document.querySelector("#partnerPortrait");
@@ -237,7 +235,6 @@ const playerBackPortrait = document.querySelector("#playerBackPortrait");
 const heartScore = document.querySelector("#heartScore");
 const chatForm = document.querySelector("#chatForm");
 const chatInput = document.querySelector("#chatInput");
-const keyboardToggle = document.querySelector("#keyboardToggle");
 const gameKeyboard = document.querySelector("#gameKeyboard");
 const floorBadge = document.querySelector("#floorBadge");
 const floorName = document.querySelector("#floorName");
@@ -408,8 +405,6 @@ function startMatching() {
 function enterRoom() {
   const character = state.selectedCharacter;
   showScreen("room");
-  roomRelation.textContent = `${relationLabels[state.relation]} · 상대 ${genderLabels[state.partnerGender]}`;
-  roomName.textContent = `${character.name}의 방`;
   heartScore.textContent = state.score;
   updateRoomProgress();
   updateRoomMetrics();
@@ -1282,7 +1277,10 @@ const keyboardRows = [
   [
     { label: "ㅋㅋ", value: "ㅋㅋ" },
     { label: "ㅎㅎ", value: "ㅎㅎ" },
-    { label: "스페이스", action: "space" },
+    { label: "♡", value: "♡" },
+    { label: "＿", action: "space" },
+    { label: ".", value: "." },
+    { label: "특한영", action: "special-lang" },
   ],
 ];
 
@@ -1429,7 +1427,6 @@ function renderGameKeyboard() {
 function toggleGameKeyboard(forceOpen) {
   const shouldOpen = forceOpen ?? gameKeyboard.classList.contains("hidden");
   gameKeyboard.classList.toggle("hidden", !shouldOpen);
-  keyboardToggle.textContent = shouldOpen ? "닫" : "키";
 }
 
 function handleGameKeyboardClick(event) {
@@ -1442,6 +1439,9 @@ function handleGameKeyboardClick(event) {
     return;
   }
   if (action === "shift") {
+    return;
+  }
+  if (action === "special-lang") {
     return;
   }
   if (action === "space") {
@@ -1675,7 +1675,6 @@ document.querySelectorAll(".move-btn").forEach((button) => {
 });
 
 chatForm.addEventListener("submit", sendMessage);
-keyboardToggle.addEventListener("click", () => toggleGameKeyboard());
 chatInput.addEventListener("click", () => toggleGameKeyboard(true));
 gameKeyboard.addEventListener("click", handleGameKeyboardClick);
 gameRoom.addEventListener("pointerdown", handleRoomTap);
