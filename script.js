@@ -1275,16 +1275,60 @@ function maybeSurpriseThreat(chance = 0.04) {
   threatTimer = window.setTimeout(missThreat, 3600);
 }
 
-const keyboardRows = [
-  ["ㅂ", "ㅈ", "ㄷ", "ㄱ", "ㅅ", "ㅛ", "ㅕ", "ㅑ", "ㅐ", "ㅔ"],
-  ["ㅁ", "ㄴ", "ㅇ", "ㄹ", "ㅎ", "ㅗ", "ㅓ", "ㅏ", "ㅣ"],
-  [{ label: "⇧", action: "shift" }, "ㅋ", "ㅌ", "ㅊ", "ㅍ", "ㅠ", "ㅜ", "ㅡ", { label: "⌫", action: "delete" }],
-  [
-    { label: "ㅋㅋ", value: "ㅋㅋ" },
-    { label: "ㅎㅎ", value: "ㅎㅎ" },
-    { label: "스페이스", action: "space" },
+let keyboardMode = "ko";
+let keyboardShift = false;
+
+const keyboardLayouts = {
+  ko: [
+    ["ㅂ", "ㅈ", "ㄷ", "ㄱ", "ㅅ", "ㅛ", "ㅕ", "ㅑ", "ㅐ", "ㅔ"],
+    ["ㅁ", "ㄴ", "ㅇ", "ㄹ", "ㅎ", "ㅗ", "ㅓ", "ㅏ", "ㅣ"],
+    [{ label: "⇧", action: "shift" }, "ㅋ", "ㅌ", "ㅊ", "ㅍ", "ㅠ", "ㅜ", "ㅡ", { label: "⌫", action: "delete" }],
+    [
+      { label: "특수문자", action: "symbols" },
+      { label: "한/영", action: "toggle-language" },
+      { label: "♡", value: "♡" },
+      { label: "스페이스바", action: "space" },
+      { label: ".", value: "." },
+      { label: "띄어쓰기", action: "space" },
+    ],
   ],
-];
+  en: [
+    ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+    ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+    [{ label: "⇧", action: "shift" }, "z", "x", "c", "v", "b", "n", "m", { label: "⌫", action: "delete" }],
+    [
+      { label: "특수문자", action: "symbols" },
+      { label: "한/영", action: "toggle-language" },
+      { label: "♡", value: "♡" },
+      { label: "스페이스바", action: "space" },
+      { label: ".", value: "." },
+      { label: "띄어쓰기", action: "space" },
+    ],
+  ],
+  symbols: [
+    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+    ["!", "?", "@", "#", "%", "&", "*", "(", ")"],
+    [{ label: "⇧", action: "shift" }, "-", "_", "+", "=", "/", ":", ";", { label: "⌫", action: "delete" }],
+    [
+      { label: "특수문자", action: "symbols" },
+      { label: "한/영", action: "toggle-language" },
+      { label: "♡", value: "♡" },
+      { label: "스페이스바", action: "space" },
+      { label: ".", value: "." },
+      { label: "띄어쓰기", action: "space" },
+    ],
+  ],
+};
+
+const shiftedKorean = {
+  "ㅂ": "ㅃ",
+  "ㅈ": "ㅉ",
+  "ㄷ": "ㄸ",
+  "ㄱ": "ㄲ",
+  "ㅅ": "ㅆ",
+  "ㅐ": "ㅒ",
+  "ㅔ": "ㅖ",
+};
 
 const choList = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"];
 const jungList = ["ㅏ", "ㅐ", "ㅑ", "ㅒ", "ㅓ", "ㅔ", "ㅕ", "ㅖ", "ㅗ", "ㅘ", "ㅙ", "ㅚ", "ㅛ", "ㅜ", "ㅝ", "ㅞ", "ㅟ", "ㅠ", "ㅡ", "ㅢ", "ㅣ"];
@@ -1410,16 +1454,23 @@ function handleKeyboardValue(value) {
 
 function renderGameKeyboard() {
   gameKeyboard.textContent = "";
-  keyboardRows.forEach((row) => {
+  keyboardLayouts[keyboardMode].forEach((row) => {
     const rowElement = document.createElement("div");
     rowElement.className = "keyboard-row";
     row.forEach((key) => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = `game-key ${key.action ? "action" : ""}`;
-      button.textContent = key.label || key;
-      button.dataset.keyValue = key.value || key;
+      const rawValue = key.value || key;
+      const shiftedValue = keyboardMode === "ko" && keyboardShift
+        ? shiftedKorean[rawValue] || rawValue
+        : keyboardMode === "en" && keyboardShift && typeof rawValue === "string"
+          ? rawValue.toUpperCase()
+          : rawValue;
+      button.textContent = key.label || shiftedValue;
+      button.dataset.keyValue = shiftedValue;
       if (key.action) button.dataset.keyAction = key.action;
+      if (key.action === "shift" && keyboardShift) button.classList.add("active");
       rowElement.append(button);
     });
     gameKeyboard.append(rowElement);
@@ -1442,6 +1493,22 @@ function handleGameKeyboardClick(event) {
     return;
   }
   if (action === "shift") {
+    keyboardShift = !keyboardShift;
+    renderGameKeyboard();
+    return;
+  }
+  if (action === "toggle-language") {
+    keyboardMode = keyboardMode === "en" ? "ko" : "en";
+    keyboardShift = false;
+    resetComposition();
+    renderGameKeyboard();
+    return;
+  }
+  if (action === "symbols") {
+    keyboardMode = keyboardMode === "symbols" ? "ko" : "symbols";
+    keyboardShift = false;
+    resetComposition();
+    renderGameKeyboard();
     return;
   }
   if (action === "space") {
@@ -1455,6 +1522,10 @@ function handleGameKeyboardClick(event) {
     return;
   }
   handleKeyboardValue(button.dataset.keyValue || "");
+  if (keyboardShift) {
+    keyboardShift = false;
+    renderGameKeyboard();
+  }
 }
 
 function sendMessage(event) {
