@@ -1289,9 +1289,10 @@ const keyboardLayouts = {
   ],
   symbols: [
     ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
-    ["!", "?", "@", "#", "%", "&", "*", "(", ")"],
-    [{ label: "⇧", action: "shift" }, "-", "_", "+", "=", "/", ":", ";", { label: "⌫", action: "delete" }],
-    keyboardBottomRow,
+    ["+", "×", "÷", "=", "/", "_", "<", ">", "♡", "☆"],
+    ["!", "@", "#", "~", "%", "^", "&", "*", "(", ")"],
+    [{ label: "1/2", action: "symbol-page" }, "-", "'", "\"", ":", ";", ",", "?", { label: "⌫", action: "delete" }],
+    [{ label: "가", action: "mode-ko" }, { label: "한/영", action: "mode-en" }, "@", { label: "＿", action: "space" }, ".", { label: "↵", action: "send" }],
   ],
   en: [
     ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
@@ -1425,6 +1426,7 @@ function handleKeyboardValue(value) {
 
 function renderGameKeyboard() {
   gameKeyboard.textContent = "";
+  gameKeyboard.dataset.mode = keyboardMode;
   keyboardLayouts[keyboardMode].forEach((row) => {
     const rowElement = document.createElement("div");
     rowElement.className = "keyboard-row";
@@ -1458,6 +1460,21 @@ function handleGameKeyboardClick(event) {
   if (action === "shift") {
     return;
   }
+  if (action === "symbol-page") {
+    return;
+  }
+  if (action === "mode-ko") {
+    keyboardMode = "ko";
+    resetComposition();
+    renderGameKeyboard();
+    return;
+  }
+  if (action === "mode-en") {
+    keyboardMode = "en";
+    resetComposition();
+    renderGameKeyboard();
+    return;
+  }
   if (action === "special-lang") {
     const currentModeIndex = keyboardModeOrder.indexOf(keyboardMode);
     keyboardMode = keyboardModeOrder[(currentModeIndex + 1) % keyboardModeOrder.length];
@@ -1473,6 +1490,11 @@ function handleGameKeyboardClick(event) {
   if (action === "close") {
     resetComposition();
     toggleGameKeyboard(false);
+    return;
+  }
+  if (action === "send") {
+    resetComposition();
+    chatForm.requestSubmit();
     return;
   }
   handleKeyboardValue(button.dataset.keyValue || "");
