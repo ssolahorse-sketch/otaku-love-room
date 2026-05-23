@@ -1329,9 +1329,9 @@ button {
 .controls-panel {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 9px;
   align-items: center;
-  padding: 12px 14px max(14px, env(safe-area-inset-bottom));
+  padding: 10px 8px max(10px, env(safe-area-inset-bottom));
   border-top: 1px solid var(--line);
   background: rgba(18, 15, 32, 0.9);
   backdrop-filter: blur(18px);
@@ -1377,13 +1377,13 @@ button {
 
 .chat-compose {
   display: grid;
-  grid-template-columns: 1fr 62px;
-  gap: 8px;
+  grid-template-columns: 1fr 54px;
+  gap: 7px;
 }
 
 .chat-compose input {
   min-width: 0;
-  min-height: 46px;
+  min-height: 42px;
   padding: 0 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
@@ -1397,7 +1397,7 @@ button {
 }
 
 .chat-compose button {
-  min-height: 46px;
+  min-height: 42px;
   background: var(--accent-2);
   color: #071b24;
   font-weight: 850;
@@ -1406,8 +1406,8 @@ button {
 .game-keyboard {
   grid-column: 1 / -1;
   display: grid;
-  gap: 5px;
-  padding-top: 2px;
+  gap: 6px;
+  padding-top: 1px;
 }
 
 .game-keyboard.hidden {
@@ -1416,7 +1416,7 @@ button {
 
 .keyboard-row {
   display: grid;
-  gap: 5px;
+  gap: 6px;
 }
 
 .keyboard-row:nth-child(1) {
@@ -1425,23 +1425,24 @@ button {
 
 .keyboard-row:nth-child(2) {
   grid-template-columns: repeat(9, 1fr);
+  padding: 0 13px;
 }
 
 .keyboard-row:nth-child(3) {
-  grid-template-columns: 1fr repeat(7, 1fr) 1fr;
+  grid-template-columns: 1.25fr repeat(7, 1fr) 1.25fr;
 }
 
 .keyboard-row:nth-child(4) {
-  grid-template-columns: 1fr 1fr 0.8fr 1.35fr 0.7fr 1fr;
+  grid-template-columns: 0.95fr 0.95fr 0.72fr 3.35fr 0.72fr 1.05fr;
 }
 
 .game-key {
   min-width: 0;
-  min-height: 31px;
-  border-radius: 8px;
+  min-height: 37px;
+  border-radius: 7px;
   background: rgba(255, 255, 255, 0.1);
   color: rgba(255, 248, 241, 0.92);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
 }
 
