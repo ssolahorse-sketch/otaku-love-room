@@ -1270,19 +1270,36 @@ function maybeSurpriseThreat(chance = 0.04) {
   threatTimer = window.setTimeout(missThreat, 3600);
 }
 
-const keyboardRows = [
+const keyboardBottomRow = [
+  { label: "ㅋㅋ", value: "ㅋㅋ" },
+  { label: "ㅎㅎ", value: "ㅎㅎ" },
+  { label: "♡", value: "♡" },
+  { label: "＿", action: "space" },
+  { label: ".", value: "." },
+  { label: "특한영", action: "special-lang" },
+];
+const keyboardModeOrder = ["ko", "symbols", "en"];
+let keyboardMode = "ko";
+const keyboardLayouts = {
+  ko: [
   ["ㅂ", "ㅈ", "ㄷ", "ㄱ", "ㅅ", "ㅛ", "ㅕ", "ㅑ", "ㅐ", "ㅔ"],
   ["ㅁ", "ㄴ", "ㅇ", "ㄹ", "ㅎ", "ㅗ", "ㅓ", "ㅏ", "ㅣ"],
   [{ label: "⇧", action: "shift" }, "ㅋ", "ㅌ", "ㅊ", "ㅍ", "ㅠ", "ㅜ", "ㅡ", { label: "⌫", action: "delete" }],
-  [
-    { label: "ㅋㅋ", value: "ㅋㅋ" },
-    { label: "ㅎㅎ", value: "ㅎㅎ" },
-    { label: "♡", value: "♡" },
-    { label: "＿", action: "space" },
-    { label: ".", value: "." },
-    { label: "특한영", action: "special-lang" },
+    keyboardBottomRow,
   ],
-];
+  symbols: [
+    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+    ["!", "?", "@", "#", "%", "&", "*", "(", ")"],
+    [{ label: "⇧", action: "shift" }, "-", "_", "+", "=", "/", ":", ";", { label: "⌫", action: "delete" }],
+    keyboardBottomRow,
+  ],
+  en: [
+    ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+    ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+    [{ label: "⇧", action: "shift" }, "z", "x", "c", "v", "b", "n", "m", { label: "⌫", action: "delete" }],
+    keyboardBottomRow,
+  ],
+};
 
 const choList = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"];
 const jungList = ["ㅏ", "ㅐ", "ㅑ", "ㅒ", "ㅓ", "ㅔ", "ㅕ", "ㅖ", "ㅗ", "ㅘ", "ㅙ", "ㅚ", "ㅛ", "ㅜ", "ㅝ", "ㅞ", "ㅟ", "ㅠ", "ㅡ", "ㅢ", "ㅣ"];
@@ -1408,7 +1425,7 @@ function handleKeyboardValue(value) {
 
 function renderGameKeyboard() {
   gameKeyboard.textContent = "";
-  keyboardRows.forEach((row) => {
+  keyboardLayouts[keyboardMode].forEach((row) => {
     const rowElement = document.createElement("div");
     rowElement.className = "keyboard-row";
     row.forEach((key) => {
@@ -1442,6 +1459,10 @@ function handleGameKeyboardClick(event) {
     return;
   }
   if (action === "special-lang") {
+    const currentModeIndex = keyboardModeOrder.indexOf(keyboardMode);
+    keyboardMode = keyboardModeOrder[(currentModeIndex + 1) % keyboardModeOrder.length];
+    resetComposition();
+    renderGameKeyboard();
     return;
   }
   if (action === "space") {
