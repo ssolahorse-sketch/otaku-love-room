@@ -406,8 +406,7 @@ button {
 }
 
 .room-screen {
-  --room-header-space: calc(max(14px, env(safe-area-inset-top)) + 49px);
-  padding-top: var(--room-header-space);
+  --room-reveal-offset: 63px;
   background:
     linear-gradient(rgba(18, 15, 31, 0.68), rgba(18, 15, 31, 0.96)),
     url("assets/icon.png") center / cover;
@@ -427,6 +426,9 @@ button {
   background: transparent;
   backdrop-filter: none;
   z-index: 12;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .mini-game-btn,
@@ -1159,7 +1161,7 @@ button {
 .partner-character {
   position: absolute;
   left: calc(var(--partner-x, 50) * 1%);
-  top: calc(var(--partner-y, 60) * 1% + var(--room-character-drop));
+  top: var(--partner-screen-y, calc(var(--partner-y, 60) * 1% + var(--room-character-drop)));
   width: calc(210px * var(--room-object-scale));
   height: calc(370px * var(--room-object-scale));
   transform: translate3d(-50%, -100%, 0) scale(var(--partner-scale, 1));
@@ -1201,7 +1203,7 @@ button {
 .player-shadow {
   position: absolute;
   left: calc(var(--player-x, 50) * 1%);
-  top: calc(var(--player-y, 70) * 1% + var(--room-character-drop));
+  top: var(--player-screen-y, calc(var(--player-y, 70) * 1% + var(--room-character-drop)));
   width: calc(210px * var(--room-object-scale));
   height: calc(370px * var(--room-object-scale));
   transform: translate3d(-50%, -100%, 0) scale(var(--player-scale, 1));

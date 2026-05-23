@@ -207,7 +207,10 @@ const roomMetrics = {
   frontY: 146,
   frontEdgeY: 142,
   wallBottom: 35,
+  wallScreenY: 35,
   roomHeight: 620,
+  effectiveHeight: 620,
+  revealOffset: 0,
 };
 const partnerDemoPath = [
   { x: 26, y: "back", label: "왼쪽 위" },
@@ -224,6 +227,7 @@ const matchButton = document.querySelector("#matchButton");
 const matchingText = document.querySelector("#matchingText");
 const matchingPortrait = document.querySelector("#matchingPortrait");
 const appearanceHint = document.querySelector("#appearanceHint");
+const roomScreen = document.querySelector("#roomScreen");
 const gameRoom = document.querySelector(".game-room");
 const partnerCharacter = document.querySelector("#partnerCharacter");
 const partnerPortrait = document.querySelector("#partnerPortrait");
@@ -539,6 +543,10 @@ function characterVisibleBound(characterId, facing) {
   return bounds[facing] || bounds.front;
 }
 
+function roomScreenY(y) {
+  return roomMetrics.revealOffset + ((y + roomCharacterDropPercent) / 100) * roomMetrics.effectiveHeight;
+}
+
 function updatePartnerPosition(x, y) {
   const point = clampToFloor(x, y);
   const visualDepth = perspectiveDepth(point.y);
@@ -556,6 +564,7 @@ function updatePartnerPosition(x, y) {
   partnerDemoPosition = point;
   partnerCharacter.style.setProperty("--partner-x", point.x.toFixed(2));
   partnerCharacter.style.setProperty("--partner-y", point.y.toFixed(2));
+  partnerCharacter.style.setProperty("--partner-screen-y", `${roomScreenY(point.y).toFixed(2)}px`);
   partnerCharacter.style.setProperty("--partner-scale", scale.toFixed(3));
   partnerCharacter.style.setProperty("--partner-image-y", `${imageY.toFixed(2)}%`);
   partnerCharacter.style.setProperty("--partner-sway", `${sway.toFixed(2)}px`);
@@ -587,16 +596,23 @@ function updateRoomMetrics() {
   updateAppViewport();
   const rect = gameRoom.getBoundingClientRect();
   const height = rect.height || 620;
-  const compact = clamp((620 - height) / 260, 0, 1);
-  const roomy = clamp((height - 620) / 260, 0, 1);
+  const revealOffset = parseFloat(getComputedStyle(roomScreen).getPropertyValue("--room-reveal-offset")) || 0;
+  const effectiveHeight = Math.max(260, height - revealOffset);
+  const compact = clamp((620 - effectiveHeight) / 260, 0, 1);
+  const roomy = clamp((effectiveHeight - 620) / 260, 0, 1);
+  const wallBottom = 35 - compact * 5 + roomy * 2;
+  const wallScreenY = revealOffset + (wallBottom / 100) * effectiveHeight;
 
   roomMetrics.roomHeight = height;
-  roomMetrics.wallBottom = 35 - compact * 5 + roomy * 2;
+  roomMetrics.effectiveHeight = effectiveHeight;
+  roomMetrics.revealOffset = revealOffset;
+  roomMetrics.wallBottom = wallBottom;
+  roomMetrics.wallScreenY = (wallScreenY / height) * 100;
   roomMetrics.backY = roomMetrics.wallBottom + 1 - roomCharacterDropPercent;
   roomMetrics.frontY = 146 - compact * 12 + roomy * 4;
   roomMetrics.frontEdgeY = roomMetrics.frontY - 4;
-  roomMetrics.objectScale = height / 620;
-  gameRoom.style.setProperty("--room-back-bottom", `${roomMetrics.wallBottom.toFixed(1)}%`);
+  roomMetrics.objectScale = effectiveHeight / 620;
+  gameRoom.style.setProperty("--room-back-bottom", `${wallScreenY.toFixed(1)}px`);
   gameRoom.style.setProperty("--room-object-scale", roomMetrics.objectScale.toFixed(3));
   gameRoom.style.setProperty("--room-character-drop", `${roomCharacterDropPercent}%`);
 
@@ -823,7 +839,7 @@ function roomClientPointToFloor(clientX, clientY) {
   const rect = gameRoom.getBoundingClientRect();
   const x = ((clientX - rect.left) / rect.width) * 100;
   const screenY = ((clientY - rect.top) / rect.height) * 100;
-  const depth = clamp((screenY - roomMetrics.wallBottom) / (100 - roomMetrics.wallBottom), 0, 1);
+  const depth = clamp((screenY - roomMetrics.wallScreenY) / (100 - roomMetrics.wallScreenY), 0, 1);
   const y = roomMetrics.backY + depth * (roomMetrics.frontY - roomMetrics.backY);
   return clampToFloor(x, y);
 }
@@ -831,7 +847,7 @@ function roomClientPointToFloor(clientX, clientY) {
 function threatFloorPoint() {
   const x = parseFloat(roomThreat.style.getPropertyValue("--threat-x")) || 50;
   const screenY = parseFloat(roomThreat.style.getPropertyValue("--threat-y")) || 64;
-  const depth = clamp((screenY - roomMetrics.wallBottom) / (100 - roomMetrics.wallBottom), 0, 1);
+  const depth = clamp((screenY - roomMetrics.wallScreenY) / (100 - roomMetrics.wallScreenY), 0, 1);
   return clampToFloor(x, roomMetrics.backY + depth * (roomMetrics.frontY - roomMetrics.backY));
 }
 
@@ -911,6 +927,7 @@ function updatePlayerPosition() {
   const stepY = 1 - footfall * 0.004;
   playerCharacter.style.setProperty("--player-x", state.playerX.toFixed(2));
   playerCharacter.style.setProperty("--player-y", state.playerY.toFixed(2));
+  playerCharacter.style.setProperty("--player-screen-y", `${roomScreenY(state.playerY).toFixed(2)}px`);
   playerCharacter.style.setProperty("--player-scale", scale.toFixed(3));
   playerCharacter.style.setProperty("--player-image-y", `${imageY.toFixed(2)}%`);
   playerCharacter.style.setProperty("--player-image-y-px", `${(370 * imageY / 100).toFixed(2)}px`);
