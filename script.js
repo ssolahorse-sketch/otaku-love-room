@@ -5,7 +5,7 @@ const screens = {
   matching: document.querySelector("#matchingScreen"),
   room: document.querySelector("#roomScreen"),
 };
-const clientPassword = "otaku2026";
+const clientPassword = "lala";
 const clientLock = document.querySelector("#clientLock");
 const clientLockForm = document.querySelector("#clientLockForm");
 const clientLockInput = document.querySelector("#clientLockInput");
