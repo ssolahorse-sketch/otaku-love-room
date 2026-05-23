@@ -406,6 +406,8 @@ button {
 }
 
 .room-screen {
+  --room-header-space: calc(max(14px, env(safe-area-inset-top)) + 49px);
+  padding-top: var(--room-header-space);
   background:
     linear-gradient(rgba(18, 15, 31, 0.68), rgba(18, 15, 31, 0.96)),
     url("assets/icon.png") center / cover;
