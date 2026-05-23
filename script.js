@@ -1276,7 +1276,7 @@ const keyboardBottomRow = [
   { label: "♡", value: "♡" },
   { label: "＿", action: "space" },
   { label: ".", value: "." },
-  { label: "특한영", action: "special-lang" },
+  { label: "?!가a", action: "special-lang" },
 ];
 const keyboardModeOrder = ["ko", "symbols", "en"];
 let keyboardMode = "ko";
