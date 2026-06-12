@@ -736,6 +736,54 @@ function stopPartnerDemoMovement() {
   lastPartnerMoveTime = undefined;
 }
 
+function startPartnerThreatChase() {
+  if (roomThreat.classList.contains("hidden")) return;
+  stopPartnerDemoMovement();
+  partnerWalkTime = 0;
+  lastPartnerMoveTime = undefined;
+
+  const tick = (time) => {
+    if (roomThreat.classList.contains("hidden")) {
+      partnerMoveFrame = undefined;
+      lastPartnerMoveTime = undefined;
+      window.setTimeout(startPartnerDemoMovement, 500);
+      return;
+    }
+
+    if (!lastPartnerMoveTime) lastPartnerMoveTime = time;
+    const delta = Math.min((time - lastPartnerMoveTime) / 1000, 0.05);
+    lastPartnerMoveTime = time;
+
+    const target = threatFloorPoint();
+    const dx = target.x - partnerDemoPosition.x;
+    const dy = target.y - partnerDemoPosition.y;
+    const axis = Math.abs(dy) > Math.abs(dx) ? "y" : "x";
+    const step = movementSpeed(partnerDemoPosition.y, axis, true) * delta * 1.08;
+
+    if (Math.hypot(dx, dy) <= Math.max(1.8, step * 1.2)) {
+      updatePartnerPosition(target.x, target.y);
+      catchThreat();
+      return;
+    }
+
+    if (axis === "y") {
+      partnerDemoPosition.y += Math.sign(dy) * Math.min(Math.abs(dy), step);
+    } else {
+      partnerDemoPosition.x += Math.sign(dx) * Math.min(Math.abs(dx), step);
+    }
+
+    partnerWalkTime += delta;
+    if (Math.abs(dy) > 0.2) {
+      setPartnerFacing(target.y < partnerDemoPosition.y ? "back" : "front");
+    }
+    updatePartnerPosition(partnerDemoPosition.x, partnerDemoPosition.y);
+    partnerMoveFrame = window.requestAnimationFrame(tick);
+  };
+
+  speakPartner(`${state.selectedCharacter.name}: 내가 잡으러 갈게!`);
+  partnerMoveFrame = window.requestAnimationFrame(tick);
+}
+
 function setPlayerFacing(direction) {
   playerCharacter.classList.toggle("facing-back", direction === "up");
   playerCharacter.classList.remove("near-close");
@@ -1125,6 +1173,7 @@ function startThreatLoop() {
 function stopThreatLoop() {
   window.clearTimeout(threatTimer);
   stopThreatMotion();
+  stopPartnerDemoMovement();
   threatTimer = undefined;
   roomThreat.classList.add("hidden");
 }
@@ -1210,6 +1259,7 @@ function showThreat() {
 
   roomThreat.classList.remove("hidden");
   if (isMoving) startThreatMotion();
+  startPartnerThreatChase();
   window.clearTimeout(threatTimer);
   threatTimer = window.setTimeout(missThreat, isSurprise ? 3800 : isCoop ? 6800 : isMoving ? 6400 : 5200);
 }
@@ -1232,9 +1282,7 @@ function catchThreat() {
   speakPartner(isCoop
     ? `${state.selectedCharacter.name}: 둘이 잡으니까 더 재밌다.`
     : `${state.selectedCharacter.name}: 잡았다! 방이 조금 깨끗해졌어.`);
-  if (isCoop) {
-    window.setTimeout(startPartnerDemoMovement, 900);
-  }
+  window.setTimeout(startPartnerDemoMovement, isCoop ? 900 : 650);
   scheduleThreat();
 }
 
@@ -1265,9 +1313,7 @@ function missThreat() {
   speakPartner(isCoop
     ? `${state.selectedCharacter.name}: 아쉽다. 다음엔 둘이 더 빨리 가보자.`
     : `${state.selectedCharacter.name}: 놓쳤다... 그래도 방에는 문제 없게 해둘게.`);
-  if (isCoop) {
-    window.setTimeout(startPartnerDemoMovement, 700);
-  }
+  window.setTimeout(startPartnerDemoMovement, isCoop ? 700 : 500);
   scheduleThreat();
 }
 
@@ -1284,6 +1330,7 @@ function maybeSurpriseThreat(chance = 0.04) {
   roomThreat.querySelector("span").textContent = "반짝 꿈틀이";
   setThreatPosition(26 + Math.random() * 52, 44 + Math.random() * 34);
   roomThreat.classList.remove("hidden");
+  startPartnerThreatChase();
   threatTimer = window.setTimeout(missThreat, 3600);
 }
 
